@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>R Markdown Tutorial (Lab) + Hands-on Demo</title>
+  <meta name="description" content="R Markdown tutorial with copy/paste chunks, hands-on demo, troubleshooting, and datasets." />
+  <style>
+    :root{
+      --bg:#ffffff;
+      --panel:#f6f7fb;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#4b5563;
+      --border:#e5e7eb;
+      --link:#1d4ed8;
+      --accent:#0ea5e9;
+      --accentSoft: rgba(14,165,233,.10);
+      --shadow:0 10px 24px rgba(17,24,39,.08);
+      --radius:14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:var(--bg);
+      color:var(--text);
+    }
+    a{color:var(--link); text-decoration:none}
+    a:hover{text-decoration:underline}
+
+    .layout{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      min-height:100vh;
+    }
+
+    .sidebar{
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+      padding:16px 14px;
+      border-right:1px solid var(--border);
+      background:var(--panel);
+    }
+
+    .brand{
+      padding:12px 12px 14px;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background:var(--card);
+      box-shadow: var(--shadow);
+      margin-bottom:12px;
+    }
+    .brand h1{
+      font-size:16px;
+      margin:0 0 6px;
+      line-height:1.2;
+      letter-spacing:.2px;
+    }
+    .brand .meta{
+      margin:0;
+      font-size:12.5px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
+    .search{
+      display:flex;
+      gap:10px;
+      padding:10px 12px;
+      margin:12px 0 14px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+    .search input{
+      width:100%;
+      border:0;
+      outline:0;
+      background:transparent;
+      color:var(--text);
+      font-size:13px;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding-bottom:10px;
+    }
+    .nav a{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid transparent;
+      color:var(--text);
+      font-size:13px;
+    }
+    .nav a:hover{
+      background:#fff;
+      border-color: var(--border);
+      text-decoration:none;
+    }
+    .nav a.active{
+      background: var(--accentSoft);
+      border-color: rgba(14,165,233,.30);
+    }
+    .pill{
+      margin-left:auto;
+      font-size:11px;
+      color:var(--muted);
+      border:1px solid var(--border);
+      padding:2px 8px;
+      border-radius:999px;
+      background:#fff;
+      white-space:nowrap;
+    }
+
+    .hint{
+      padding:10px 10px 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+    .kbd{
+      font-family: var(--mono);
+      font-size:11px;
+      border:1px solid var(--border);
+      padding:2px 6px;
+      border-radius:8px;
+      background:#fff;
+      color:var(--text);
+    }
+
+    .main{
+      padding:24px 20px 60px;
+    }
+    .container{
+      max-width:1040px;
+      margin:0 auto;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      margin-bottom:14px;
+    }
+    .titleblock h2{
+      margin:0 0 6px;
+      font-size:22px;
+      letter-spacing:.2px;
+    }
+    .titleblock p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .btn{
+      appearance:none;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:13px;
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(17,24,39,.06);
+      white-space:nowrap;
+    }
+    .btn:hover{border-color:rgba(14,165,233,.45)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      margin:14px 0 22px;
+    }
+    .card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:14px 14px;
+      box-shadow: 0 10px 24px rgba(17,24,39,.05);
+    }
+    .card h3{margin:0 0 8px; font-size:15px}
+    .card p{margin:0; color:var(--muted); font-size:13px; line-height:1.65}
+    .card ul{margin:8px 0 0; padding-left:18px; color:var(--muted); font-size:13px; line-height:1.65}
+    .card li{margin:4px 0}
+
+    section{
+      margin-top:22px;
+      padding-top:10px;
+      scroll-margin-top: 12px;
+    }
+    section h2{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    section h3{
+      margin:14px 0 6px;
+      font-size:15px;
+    }
+
+    .note{
+      border:1px solid rgba(14,165,233,.25);
+      background: rgba(14,165,233,.08);
+      padding:10px 12px;
+      border-radius:12px;
+      color:var(--text);
+      margin:10px 0 12px;
+      font-size:13px;
+      line-height:1.65;
+    }
+    .warn{
+      border-color: rgba(239,68,68,.25);
+      background: rgba(239,68,68,.06);
+    }
+    .ok{
+      border-color: rgba(16,185,129,.30);
+      background: rgba(16,185,129,.08);
+    }
+
+    .codewrap{
+      border:1px solid var(--border);
+      background:#fbfbfd;
+      border-radius: 14px;
+      overflow:hidden;
+      margin:10px 0 16px;
+      box-shadow: 0 10px 24px rgba(17,24,39,.04);
+    }
+    .codebar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-bottom:1px solid var(--border);
+      background:#fff;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .codebar .left{
+      display:flex; gap:10px; align-items:center;
+      font-family: var(--mono);
+      font-size:12px;
+      color:#374151;
+      flex-wrap:wrap;
+    }
+    pre{
+      margin:0;
+      padding:12px 12px 14px;
+      overflow:auto;
+      font-family:var(--mono);
+      font-size:12.5px;
+      line-height:1.6;
+      color:#111827;
+      white-space:pre;
+    }
+    code{font-family:var(--mono)}
+    .copybtn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:6px 10px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .copybtn:hover{border-color:rgba(14,165,233,.45)}
+    .copybtn:active{transform: translateY(1px)}
+
+    .callout{
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      background:#fff;
+      padding:12px 12px;
+      box-shadow: 0 10px 24px rgba(17,24,39,.04);
+      margin:10px 0 14px;
+    }
+    .callout h4{
+      margin:0 0 6px;
+      font-size:14px;
+    }
+    .callout p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.65;
+    }
+
+    .toast{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      padding:10px 12px;
+      background:#111827;
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:12px;
+      color:#fff;
+      font-size:13px;
+      box-shadow: 0 12px 30px rgba(17,24,39,.25);
+      opacity:0;
+      transform: translateY(8px);
+      transition: opacity .2s ease, transform .2s ease;
+      pointer-events:none;
+      max-width: 280px;
+      z-index: 9999;
+    }
+    .toast.show{opacity:1; transform: translateY(0)}
+
+    footer{
+      margin-top:28px;
+      color:var(--muted);
+      font-size:12px;
+      border-top:1px solid var(--border);
+      padding-top:14px;
+      line-height:1.6;
+    }
+
+    @media (max-width: 1020px){
+      .layout{grid-template-columns: 1fr}
+      .sidebar{position:relative; height:auto}
+      .grid{grid-template-columns: 1fr}
+      .btn{width:100%}
+      .topbar{flex-direction:column}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>R Markdown Tutorial</h1>
+        <p class="meta"><b>Prepared by:</b> Puja<br/><b>For:</b> Lab meeting<br/><b>Date:</b> 19th Feb 2026</p>
+      </div>
+
+      <div class="search" role="search">
+        <input id="search" type="search" placeholder="Search topics (YAML, chunk, knit, ggplot, path)..." />
+      </div>
+
+      <nav class="nav" id="nav">
+        <a href="#goals" class="active"><span>Goals + Agenda</span><span class="pill">2–3 min</span></a>
+        <a href="#what-is-rmd"><span>What is R Markdown?</span><span class="pill">5–10 min</span></a>
+        <a href="#outputs"><span>Outputs (HTML/PDF/Word)</span><span class="pill">2 min</span></a>
+        <a href="#why-care"><span>Why we care</span><span class="pill">3 min</span></a>
+
+        <a href="#hands-on"><span>Hands-on mini report</span><span class="pill">20–30 min</span></a>
+        <a href="#create-rmd"><span>Create a new .Rmd</span><span class="pill">3 min</span></a>
+        <a href="#yaml"><span>YAML header</span><span class="pill">5 min</span></a>
+        <a href="#markdown-text"><span>Markdown text basics</span><span class="pill">5 min</span></a>
+        <a href="#chunks"><span>Code chunks</span><span class="pill">8 min</span></a>
+        <a href="#tidy-demo"><span>Wrangle + plot + table</span><span class="pill">10–12 min</span></a>
+        <a href="#knit"><span>Knit successfully</span><span class="pill">3–5 min</span></a>
+
+        <a href="#datasets"><span>Datasets</span><span class="pill">8–12 min</span></a>
+        <a href="#stuff-breaks"><span>Stuff that breaks</span><span class="pill">5–10 min</span></a>
+        <a href="#take-home"><span>Take-home template</span><span class="pill">2–5 min</span></a>
+      </nav>
+
+      <div class="hint">
+        Tip: click <span class="kbd">Copy</span> to copy code. If a browser blocks copying, click the code block once (it selects everything) and press
+        <span class="kbd">Ctrl</span> + <span class="kbd">C</span> (Windows) or <span class="kbd">⌘</span> + <span class="kbd">C</span> (Mac).
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="container">
+
+        <div class="topbar">
+          <div class="titleblock">
+            <h2>R Markdown: from zero to a knitted mini report</h2>
+            <p>Goal: everyone leaves with enough comfort to create a simple <code>.Rmd</code> and knit it successfully (one plot + one table).</p>
+          </div>
+          <button class="btn" id="toTop">Back to top</button>
+        </div>
+
+        <div class="grid" id="goals">
+          <div class="card">
+            <h3>Today’s outcomes</h3>
+            <ul>
+              <li>Understand what R Markdown is and why it’s useful</li>
+              <li>Create a new <code>.Rmd</code> from the template</li>
+              <li>Know the 3 key pieces: YAML, Markdown text, code chunks</li>
+              <li>Knit to HTML and read common error messages</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Time plan (approx.)</h3>
+            <ul>
+              <li>Overview + why (5–10 min)</li>
+              <li>Guided hands-on mini report (20–30 min)</li>
+              <li>Stuff that breaks (5–10 min)</li>
+              <li>Wrap-up + take-home template (2–5 min)</li>
+            </ul>
+          </div>
+        </div>
+
+        <section id="what-is-rmd">
+          <h2>1) Quick overview: What is R Markdown?</h2>
+
+          <div class="callout">
+            <h4>Definition</h4>
+            <p><b>R Markdown</b> is a file format (<code>.Rmd</code>) that combines formatted text and executable R code. When you <b>Knit</b>, the code runs and the output (tables, figures, numbers) is inserted into a final report.</p>
+          </div>
+
+          <div class="callout">
+            <h4>Key idea</h4>
+            <p>When knitting, R runs from top-to-bottom in a fresh session. Your report should contain everything needed to reproduce the results.</p>
+          </div>
+        </section>
+
+        <section id="outputs">
+          <h2>Typical outputs (HTML / PDF / Word)</h2>
+
+          <div class="note">
+            Choose <b>one</b> output format in the YAML header. For today, use <b>HTML</b> (most reliable).
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">HTML (recommended)</div>
+              <button class="copybtn" data-copy="#c-yaml-html">Copy</button>
+            </div>
+<pre id="c-yaml-html">---
+title: "My Report"
+output: html_document
+---</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Word</div>
+              <button class="copybtn" data-copy="#c-yaml-word">Copy</button>
+            </div>
+<pre id="c-yaml-word">---
+title: "My Report"
+output: word_document
+---</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">PDF (often needs LaTeX)</div>
+              <button class="copybtn" data-copy="#c-yaml-pdf">Copy</button>
+            </div>
+<pre id="c-yaml-pdf">---
+title: "My Report"
+output: pdf_document
+---</pre>
+          </div>
+        </section>
+
+        <section id="why-care">
+          <h2>Why we care (lab workflows)</h2>
+
+          <div class="grid">
+            <div class="card">
+              <h3>Reproducible analyses</h3>
+              <p>Your <code>.Rmd</code> becomes a record of what you did and why, plus the exact code.</p>
+            </div>
+            <div class="card">
+              <h3>Auto-updating figures + tables</h3>
+              <p>Change data or filters → knit again → your report updates consistently.</p>
+            </div>
+            <div class="card">
+              <h3>Collaboration</h3>
+              <p>Share one file containing notes, code, plots, and tables. Easier to review.</p>
+            </div>
+            <div class="card">
+              <h3>Cleaner workflow</h3>
+              <p>Avoid manual copy/paste into Word and reduce errors from mismatched versions.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="hands-on">
+          <h2>2) Guided hands-on demo: build a mini report from scratch</h2>
+          <div class="note">
+            We will make a mini report using the built-in dataset <code>mtcars</code>:
+            load packages → small wrangle → one ggplot → one table → knit to HTML.
+          </div>
+        </section>
+
+        <section id="create-rmd">
+          <h2>Create a new .Rmd (from template)</h2>
+
+          <div class="note">
+            In RStudio: <b>File → New File → R Markdown…</b> → choose <b>HTML</b> → <b>OK</b> → click <b>Knit</b>.
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Minimal working Rmd (copy into a new .Rmd file)</div>
+              <button class="copybtn" data-copy="#c-minimal">Copy</button>
+            </div>
+<pre id="c-minimal">---
+title: "Mini R Markdown Report"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Introduction
+Write your notes here.
+
+```{r}
+x <- rnorm(50)
+mean(x)
+```</pre>
+          </div>
+        </section>
+
+        <section id="yaml">
+          <h2>YAML header (title/author/date/output)</h2>
+
+          <div class="callout">
+            <h4>What YAML does</h4>
+            <p>YAML is the top block between <code>---</code> lines. It controls the output type and document settings.</p>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">HTML with table of contents</div>
+              <button class="copybtn" data-copy="#c-yaml-toc">Copy</button>
+            </div>
+<pre id="c-yaml-toc">---
+title: "Mini Report"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+---</pre>
+          </div>
+
+          <div class="note warn">
+            YAML is indentation-sensitive. If knitting fails immediately, check spacing and <code>---</code> lines.
+          </div>
+        </section>
+
+        <section id="markdown-text">
+          <h2>Markdown text basics</h2>
+
+          <div class="callout">
+            <h4>What Markdown is</h4>
+            <p>Markdown is a simple way to format text using characters. You use it for headings, lists, emphasis, and links.</p>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Markdown formatting examples (paste into your Rmd body)</div>
+              <button class="copybtn" data-copy="#c-markdown-basics">Copy</button>
+            </div>
+<pre id="c-markdown-basics"># Heading 1
+## Heading 2
+
+This is **bold**, this is *italic*, and this is `inline code`.
+
+- Bullet 1
+- Bullet 2
+  - Sub-bullet
+
+A link: https://rmarkdown.rstudio.com/</pre>
+          </div>
+        </section>
+
+        <section id="chunks">
+          <h2>Code chunks</h2>
+
+          <div class="callout">
+            <h4>What a chunk is</h4>
+            <p>A code chunk starts with <code>```{r}</code> and ends with <code>```</code>. When you knit, R runs that code and inserts output.</p>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Basic chunk</div>
+              <button class="copybtn" data-copy="#c-chunk-basic">Copy</button>
+            </div>
+<pre id="c-chunk-basic">```{r}
+summary(mtcars)
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Global chunk defaults (put near the top)</div>
+              <button class="copybtn" data-copy="#c-setup">Copy</button>
+            </div>
+<pre id="c-setup">```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Options you will use most</div>
+              <button class="copybtn" data-copy="#c-common-opts">Copy</button>
+            </div>
+<pre id="c-common-opts">echo=FALSE        # hide code
+include=FALSE     # run code but show nothing
+message=FALSE     # hide package startup messages
+warning=FALSE     # hide warnings
+fig.width=7       # plot width
+fig.height=4      # plot height</pre>
+          </div>
+
+          <div class="note warn">
+            If any chunk errors, knitting stops. Fix the first error shown in the Knit output.
+          </div>
+        </section>
+
+        <section id="tidy-demo">
+          <h2>Wrangle + plot + table (mtcars)</h2>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Install + load packages (first time only)</div>
+              <button class="copybtn" data-copy="#c-packages">Copy</button>
+            </div>
+<pre id="c-packages">```{r}
+install.packages(c("tidyverse", "knitr"))
+library(tidyverse)
+library(knitr)
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Small wrangle + summarise</div>
+              <button class="copybtn" data-copy="#c-wrangle">Copy</button>
+            </div>
+<pre id="c-wrangle">```{r}
+sumdat <- mtcars %>%
+  mutate(cyl = factor(cyl)) %>%
+  group_by(cyl) %>%
+  summarise(
+    n = n(),
+    mean_mpg = mean(mpg),
+    sd_mpg = sd(mpg),
+    .groups = "drop"
+  )
+
+sumdat
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">One ggplot figure (geom_point)</div>
+              <button class="copybtn" data-copy="#c-plot">Copy</button>
+            </div>
+<pre id="c-plot">```{r, fig.width=7, fig.height=4}
+raw <- mtcars %>% mutate(cyl = factor(cyl))
+
+ggplot(raw, aes(x = wt, y = mpg, color = cyl)) +
+  geom_point(size = 2) +
+  theme_bw() +
+  labs(
+    title = "Fuel efficiency vs weight",
+    x = "Weight (1000 lbs)",
+    y = "Miles per gallon",
+    color = "Cylinders"
+  )
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Small summary table</div>
+              <button class="copybtn" data-copy="#c-table">Copy</button>
+            </div>
+<pre id="c-table">```{r}
+kable(sumdat, digits = 2, caption = "Summary of MPG by cylinder group (mtcars)")
+```</pre>
+          </div>
+        </section>
+
+        <section id="knit">
+          <h2>Knit successfully</h2>
+          <div class="note">
+            Click <b>Knit</b> in RStudio. R will run from top-to-bottom in a fresh session. If it fails, read the first error message.
+          </div>
+        </section>
+
+        <section id="datasets">
+          <h2>Datasets (built-in + Comparative_Springtail_AOX_dat.csv)</h2>
+
+          <div class="callout">
+            <h4>Built-in datasets (no file path problems)</h4>
+            <p>Use <code>mtcars</code> or <code>iris</code> for teaching because they are already available in R.</p>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Quick geom_point plot using iris</div>
+              <button class="copybtn" data-copy="#c-iris">Copy</button>
+            </div>
+<pre id="c-iris">```{r}
+library(tidyverse)
+
+ggplot(iris, aes(x = Sepal.Length, y = Petal.Length, color = Species)) +
+  geom_point(size = 2) +
+  theme_bw()
+```</pre>
+          </div>
+
+          <div class="callout">
+            <h4>CSV dataset hosted on this website</h4>
+            <p>
+              Upload <code>Comparative_Springtail_AOX_dat.csv</code> into the same GitHub repository root as <code>index.html</code>.
+              Then everyone can download it from this page and use the same relative path in their <code>.Rmd</code>.
+            </p>
+          </div>
+
+          <div class="note">
+            Download CSV (if uploaded in this repo):
+            <a href="Comparative_Springtail_AOX_dat.csv" download><b>Comparative_Springtail_AOX_dat.csv</b></a>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Load CSV + set treatment order</div>
+              <button class="copybtn" data-copy="#c-load-spring">Copy</button>
+            </div>
+<pre id="c-load-spring">```{r}
+library(tidyverse)
+
+spring <- read_csv("Comparative_Springtail_AOX_dat.csv")
+
+spring_factors <- spring %>%
+  mutate(treat = factor(treat, levels = c("control", "SHAM", "AA")))
+
+levels(spring_factors$treat)
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Linear model example (PMG.mg ~ treat)</div>
+              <button class="copybtn" data-copy="#c-lm-spring">Copy</button>
+            </div>
+<pre id="c-lm-spring">```{r}
+mod_1 <- lm(PMG.mg ~ treat, data = spring_factors)
+summary(mod_1)
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">geom_point plot (with jitter so points don’t overlap)</div>
+              <button class="copybtn" data-copy="#c-point-spring">Copy</button>
+            </div>
+<pre id="c-point-spring">```{r, fig.width=7, fig.height=4}
+ggplot(spring_factors, aes(x = treat, y = PMG.mg, color = treat)) +
+  geom_point(size = 2, position = position_jitter(width = 0.12, height = 0)) +
+  theme_bw() +
+  labs(title = "PMG.mg by treatment", x = "Treatment", y = "PMG.mg")
+```</pre>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Optional: points + group mean (mean shown as black dot)</div>
+              <button class="copybtn" data-copy="#c-point-mean-spring">Copy</button>
+            </div>
+<pre id="c-point-mean-spring">```{r, fig.width=7, fig.height=4}
+means <- spring_factors %>%
+  group_by(treat) %>%
+  summarise(mean_PMG = mean(PMG.mg, na.rm = TRUE), .groups = "drop")
+
+ggplot(spring_factors, aes(x = treat, y = PMG.mg, color = treat)) +
+  geom_point(size = 2, position = position_jitter(width = 0.12, height = 0)) +
+  geom_point(data = means, aes(x = treat, y = mean_PMG), inherit.aes = FALSE, color = "black", size = 4) +
+  theme_bw() +
+  labs(title = "PMG.mg by treatment (points + mean)", x = "Treatment", y = "PMG.mg")
+```</pre>
+          </div>
+
+          <div class="note warn">
+            If CSV loading fails, it’s usually a file path / working directory issue. See “Stuff that breaks.”
+          </div>
+        </section>
+
+        <section id="stuff-breaks">
+          <h2>Stuff that usually breaks (troubleshooting)</h2>
+
+          <div class="callout">
+            <h4>Working directory / file paths</h4>
+            <p>For teaching: keep your <code>.Rmd</code> and your CSV in the same folder. Use relative paths like <code>"data/myfile.csv"</code> if you store data in a folder.</p>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Check where R is looking</div>
+              <button class="copybtn" data-copy="#c-paths">Copy</button>
+            </div>
+<pre id="c-paths">```{r}
+getwd()
+list.files()
+```</pre>
+          </div>
+
+          <div class="callout">
+            <h4>Missing packages</h4>
+            <p><code>install.packages()</code> installs once. <code>library()</code> loads every session.</p>
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Install vs load</div>
+              <button class="copybtn" data-copy="#c-install-vs-library">Copy</button>
+            </div>
+<pre id="c-install-vs-library">```{r}
+install.packages("tidyverse")
+library(tidyverse)
+```</pre>
+          </div>
+
+          <div class="note warn">
+            If knitting fails: fix the first error message. Most common: wrong file path or missing package.
+          </div>
+        </section>
+
+        <section id="take-home">
+          <h2>Take-home template</h2>
+
+          <div class="note ok">
+            Copy this into a new file (e.g., <code>lab_report_template.Rmd</code>). Practice: add a second plot or a second <code>summarise()</code>.
+          </div>
+
+          <div class="codewrap">
+            <div class="codebar">
+              <div class="left">Starter .Rmd template</div>
+              <button class="copybtn" data-copy="#c-takehome">Copy</button>
+            </div>
+<pre id="c-takehome">---
+title: "Lab Notes / Mini Report"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
